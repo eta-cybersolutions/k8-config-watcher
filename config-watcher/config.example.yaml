@@ -1,0 +1,30 @@
+log:
+  level: info
+
+watch:
+  - path: /mnt/efs/config/service.conf
+    interval: 10s
+    debounce: 5s
+    cooldown: 30s
+    waitForFile: true
+    jitter:
+      min: 0s
+      max: 15s
+    detector: mtime_size_sha256
+    action:
+      type: signal
+      pidFile: /run/pids/service.pid
+      signal: SIGHUP
+      timeout: 3s
+
+  - path: /mnt/efs/config/service-command.conf
+    interval: 10s
+    debounce: 3s
+    cooldown: 15s
+    detector: mtime_size_sha256
+    action:
+      type: command
+      command:
+        - /bin/sh
+        - -c
+        - "echo config changed"

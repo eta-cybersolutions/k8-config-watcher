@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${WORKLOAD_NAME}-config-watcher
+  namespace: ${NAMESPACE}
+data:
+  config.yaml: |
+    log:
+      level: info
+    watch:
+      - path: ${CONFIG_PATH}
+        interval: 10s
+        debounce: 5s
+        cooldown: 30s
+        waitForFile: true
+        jitter:
+          min: 0s
+          max: 15s
+        detector: mtime_size_sha256
+        action:
+          type: kubernetes_restart
+          timeout: 3s
+          kubernetes:
+            workloadType: ${WORKLOAD_TYPE}
+            workloadName: ${WORKLOAD_NAME}
+            namespace: ${NAMESPACE}
