@@ -1,0 +1,32 @@
+# Inject this container under spec.template.spec.containers
+- name: config-watcher
+  image: ${WATCHER_IMAGE}
+  imagePullPolicy: IfNotPresent
+  args:
+    - "-config"
+    - "/etc/config-watcher/config.yaml"
+  securityContext:
+    runAsUser: 0
+    runAsGroup: 0
+    runAsNonRoot: false
+    allowPrivilegeEscalation: false
+  volumeMounts:
+    - name: config-watcher-config
+      mountPath: /etc/config-watcher
+    - name: shared-config
+      mountPath: /ha_shared
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+# Add these volumes under spec.template.spec.volumes
+# - name: config-watcher-config
+#   configMap:
+#     name: ${WORKLOAD_NAME}-config-watcher
+# - name: shared-config
+#   persistentVolumeClaim:
+#     claimName: ${SHARED_CONFIG_PVC}
